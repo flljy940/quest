@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest - Beersheba JB Trip</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .scoreboard {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .player-details h3 {
+            margin-bottom: 5px;
+        }
+
+        .player-points {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .challenge-card {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .current-challenge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .challenges-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .challenge-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .mobile-responsive {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .player-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .mobile-responsive {
+                flex-direction: column;
+            }
+        }
+
+        .redemption-shop {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="notification" class="notification"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-trophy"></i> Quest</h1>
+            <p>Singapore - JB Trip Game System</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('scoreboard')">
+                <i class="fas fa-chart-line"></i> Scoreboard
+            </button>
+            <button class="tab" onclick="showTab('profile')">
+                <i class="fas fa-user-plus"></i> Join Game
+            </button>
+            <button class="tab" onclick="showTab('points')">
+                <i class="fas fa-plus-circle"></i> Add Points
+            </button>
+            <button class="tab" onclick="showTab('challenges')">
+                <i class="fas fa-gamepad"></i> Challenges
+            </button>
+            <button class="tab" onclick="showTab('records')">
+                <i class="fas fa-history"></i> Records
+            </button>
+            <button class="tab" onclick="showTab('shop')">
+                <i class="fas fa-shopping-cart"></i> Redemption
+            </button>
+        </div>
+
+        <!-- Scoreboard Tab -->
+        <div id="scoreboard" class="tab-content active">
+            <h2><i class="fas fa-crown"></i> Live Scoreboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPlayers">0</div>
+                    <div>Total Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPoints">0</div>
+                    <div>Total Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalChallenges">0</div>
+                    <div>Active Challenges</div>
+                </div>
+            </div>
+            <div class="scoreboard" id="playersList"></div>
+            <div class="mobile-responsive">
+                <button class="btn" onclick="exportScoreboard()">
+                    <i class="fas fa-download"></i> Export Scoreboard
+                </button>
+                <button class="btn" onclick="exportData()">
+                    <i class="fas fa-save"></i> Save Game Data
+                </button>
+                <button class="btn" onclick="importData()">
+                    <i class="fas fa-upload"></i> Load Game Data
+                </button>
+                <button class="btn btn-danger" onclick="toggleDeleteMode()">
+                    <i class="fas fa-trash"></i> <span id="deleteModeText">Delete Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content">
+            <h2><i class="fas fa-user-plus"></i> Join the Game</h2>
+            <div class="form-group">
+                <label for="playerName">Your Name:</label>
+                <input type="text" id="playerName" placeholder="Enter your awesome name!">
+            </div>
+            <div class="form-group">
+                <label for="playerEmoji">Choose Your Avatar Emoji:</label>
+                <select id="playerEmoji">
+                    <option value="🎮">🎮 Gamer</option>
+                    <option value="🎯">🎯 Target</option>
+                    <option value="🚀">🚀 Rocket</option>
+                    <option value="🌟">🌟 Star</option>
+                    <option value="🎪">🎪 Fun</option>
+                    <option value="🎭">🎭 Drama</option>
+                    <option value="🎨">🎨 Creative</option>
+                    <option value="🎵">🎵 Music</option>
+                    <option value="🍕">🍕 Foodie</option>
+                    <option value="🎈">🎈 Party</option>
+                </select>
+            </div>
+            <button class="btn" onclick="addPlayer()">
+                <i class="fas fa-user-plus"></i> Join Game
+            </button>
+        </div>
+
+        <!-- Points Tab -->
+        <div id="points" class="tab-content">
+            <h2><i class="fas fa-plus-circle"></i> Add Points</h2>
+            <div class="form-group">
+                <label for="pointsPlayer">Select Player:</label>
+                <select id="pointsPlayer"></select>
+            </div>
+            <div class="form-group">
+                <label for="pointsAmount">Points to Add:</label>
+                <input type="number" id="pointsAmount" placeholder="Enter points (can be negative)" min="-50" max="50">
+            </div>
+            <div class="form-group">
+                <label for="pointsReason">Reason:</label>
+                <input type="text" id="pointsReason" placeholder="What did they do to earn/lose points?">
+            </div>
+            <button class="btn btn-success" onclick="addPoints()">
+                <i class="fas fa-plus"></i> Add Points
+            </button>
+            
+            <h3 style="margin-top: 30px;">Recent Point Changes</h3>
+            <div id="pointHistory"></div>
+        </div>
+
+        <!-- Challenges Tab -->
+        <div id="challenges" class="tab-content">
+            <h2><i class="fas fa-gamepad"></i> Challenge Manager</h2>
+            
+            <div class="form-group">
+                <label for="newChallenge">Add New Challenge:</label>
+                <textarea id="newChallenge" placeholder="Write a fun challenge here!" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="challengeAuthor">Your Name:</label>
+                <select id="challengeAuthor"></select>
+            </div>
+            <button class="btn" onclick="addChallenge()">
+                <i class="fas fa-plus"></i> Add Challenge
+            </button>
+
+            <div style="margin-top: 30px;">
+                <h3>Current Challenge</h3>
+                <div class="challenge-card current-challenge" id="currentChallenge">
+                    No active challenge - Draw one below!
+                </div>
+                
+                <div id="challengeCompletionForm" style="display: none; margin: 20px 0;">
+                    <h4>Who completed this challenge?</h4>
+                    <div class="form-group">
+                        <label for="challengeCompleter">Select Player(s):</label>
+                        <select id="challengeCompleter" multiple style="height: 120px;">
+                            <!-- Will be populated dynamically -->
+                        </select>
+                        <small>Hold Ctrl/Cmd to select multiple players</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="challengePoints">Points to Award (per player):</label>
+                        <input type="number" id="challengePoints" value="3" min="0" max="10">
+                    </div>
+                </div>
+                
+                <div class="mobile-responsive">
+                    <button class="btn btn-success" onclick="drawChallenge()">
+                        <i class="fas fa-random"></i> Draw Random Challenge
+                    </button>
+                    <button class="btn btn-danger" onclick="completeChallenge()" id="completeChallengeBtn">
+                        <i class="fas fa-check"></i> Complete Challenge
+                    </button>
+                </div>
+            </div>
+
+            <h3>All Challenges</h3>
+            <div class="challenges-list" id="challengesList"></div>
+        </div>
+
+        <!-- Records Tab -->
+        <div id="records" class="tab-content">
+            <h2><i class="fas fa-history"></i> Game Records</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCompletedChallenges">0</div>
+                    <div>Challenges Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="mostActiveChallengerName">-</div>
+                    <div>Most Active Challenger</div>
+                </div>
+            </div>
+
+            <h3>Challenge Completion History</h3>
+            <div id="completedChallengesList"></div>
+
+            <h3>Point History</h3>
+            <div id="fullPointHistory"></div>
+
+            <h3>Redemption History</h3>
+            <div id="fullRedemptionHistory"></div>
+        </div>
+
+        <!-- Redemption Shop Tab -->
+        <div id="shop" class="tab-content">
+            <h2><i class="fas fa-shopping-cart"></i> Redemption Shop</h2>
+            <p>Spend your Connection Points (CP) here!</p>
+            
+            <div class="form-group">
+                <label for="shopPlayer">Select Player:</label>
+                <select id="shopPlayer"></select>
+            </div>
+
+            <div class="redemption-shop">
+                <div class="shop-item">
+                    <div>
+                        <strong>Skip Challenge</strong><br>
+                        <small>Avoid the next punishment/challenge</small>
+                    </div>
+                    <div>
+                        <span style="font-weight: bold; color: #667eea;">5 CP</span>
+                        <button class="btn" onclick="redeemItem('skip', 5)">Buy</button>
+                    </div>
+                </div>
+                
+                <div class="shop-item">
+                    <div>
+                        <strong>Personal Favor</strong><br>
+                        <small>Get someone to do a small favor</small>
+                    </div>
+                    <div>
+                        <span style="font-weight: bold; color: #667eea;">8 CP</span>
+                        <button class="btn" onclick="redeemItem('favor', 8)">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item">
+                    <div>
+                        <strong>Activity Choice</strong><br>
+                        <small>Choose the next free time activity</small>
+                    </div>
+                    <div>
+                        <span style="font-weight: bold; color: #667eea;">10 CP</span>
+                        <button class="btn" onclick="redeemItem('choice', 10)">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item">
+                    <div>
+                        <strong>20-minutes Immunity</strong><br>
+                        <small>No challenges can affect you for 20 20-minutes</small>
+                    </div>
+                    <div>
+                        <span style="font-weight: bold; color: #667eea;">10 CP</span>
+                        <button class="btn" onclick="redeemItem('immunity', 10)">Buy</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Redemption History</h3>
+            <div id="redemptionHistory"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <script>
+        // const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+        const SUPABASE_URL = "https://qovilsstlsfptvrantrq.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvdmlsc3N0bHNmcHR2cmFudHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMTA2ODYsImV4cCI6MjA3MTg4NjY4Nn0.B02HhIPs6zYd6fJJeADfvIZldZA-vCEir2Or5cNCPoA";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    </script>
+
+    <script>
+        // Game data storage
+        let gameData = {
+            players: [],
+            challenges: [
+                { text: "Do a TikTok dance challenge", author: "System" },
+                { text: "Challenge a stranger to rock-paper-scissors", author: "System" },
+                { text: "被每个人创飞一次", author: "System" },
+                { text: "Wear double ponytails for at least 10 mins", author: "System" },
+                { text: "Do 10 jumping jacks while others count", author: "System" }
+            ],
+            currentChallenge: null,
+            pointHistory: [],
+            redemptions: [],
+            deleteMode: false,
+            completedChallenges: []
+        };
+
+        // Initialize the app
+        async function init() {
+            await loadData();
+            updateScoreboard();
+            updatePlayerSelects();
+            updateChallengesList();
+            updateStats();
+            updatePointHistory();
+            updateRedemptionHistory();
+            updateRecords();
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Player management
+        async function addPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            const emoji = document.getElementById('playerEmoji').value;
+            
+            if (!name) {
+                showNotification('Please enter a name!', 'error');
+                return;
+            }
+            
+            if (gameData.players.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+                showNotification('Name already exists!', 'error');
+                return;
+            }
+            
+            const player = {
+                id: Date.now(),
+                name: name,
+                emoji: emoji,
+                points: 0,
+                joinedAt: new Date()
+            };
+            
+            const { error } = await supabase.from("players").insert([player]);
+            if (error) {
+                console.error(error);
+                return showNotification('Error adding player to database!', 'error');
+            }
+            gameData.players.push(player);
+            document.getElementById('playerName').value = '';
+            
+            // await supabase.from("players").insert([player]);
+            // gameData.players.push(player);
+            updateScoreboard();
+            updatePlayerSelects();
+            updateStats();
+            showNotification(`Welcome ${name}! 🎉`);
+        }
+
+        function deletePlayer(playerId) {
+            if (!confirm('Are you sure you want to delete this player? This cannot be undone!')) {
+                return;
+            }
+
+            const playerIndex = gameData.players.findIndex(p => p.id === playerId);
+            if (playerIndex === -1) return;
+
+            const playerName = gameData.players[playerIndex].name;
+            
+            // Remove player
+            gameData.players.splice(playerIndex, 1);
+            
+            // Remove their point history
+            gameData.pointHistory = gameData.pointHistory.filter(entry => entry.player !== playerName);
+            
+            // Remove their redemptions
+            gameData.redemptions = gameData.redemptions.filter(entry => entry.player !== playerName);
+            
+            // Remove their challenges
+            gameData.challenges = gameData.challenges.filter(challenge => challenge.author !== playerName);
+            
+            saveData();
+            updateScoreboard();
+            updatePlayerSelects();
+            updateChallengesList();
+            updateStats();
+            updatePointHistory();
+            updateRedemptionHistory();
+            
+            showNotification(`${playerName} has been removed from the game.`, 'error');
+        }
+
+        function toggleDeleteMode() {
+            gameData.deleteMode = !gameData.deleteMode;
+            const button = document.getElementById('deleteModeText');
+            
+            if (gameData.deleteMode) {
+                button.textContent = 'Exit Delete Mode';
+                showNotification('Delete mode ON - Tap players to delete them', 'error');
+            } else {
+                button.textContent = 'Delete Mode';
+                showNotification('Delete mode OFF');
+            }
+            
+            updateScoreboard();
+        }
+
+        // Points management
+        function addPoints() {
+            const playerId = parseInt(document.getElementById('pointsPlayer').value);
+            const amount = parseInt(document.getElementById('pointsAmount').value);
+            const reason = document.getElementById('pointsReason').value.trim();
+            
+            if (!playerId || isNaN(amount) || !reason) {
+                showNotification('Please fill all fields!', 'error');
+                return;
+            }
+            
+            const player = gameData.players.find(p => p.id === playerId);
+            if (player) {
+                player.points += amount;
+                
+                gameData.pointHistory.unshift({
+                    player: player.name,
+                    amount: amount,
+                    reason: reason,
+                    timestamp: new Date()
+                });
+                
+                document.getElementById('pointsAmount').value = '';
+                document.getElementById('pointsReason').value = '';
+                
+                saveData();
+                updateScoreboard();
+                updateStats();
+                updatePointHistory();
+                
+                const sign = amount > 0 ? '+' : '';
+                showNotification(`${sign}${amount} CP for ${player.name}!`);
+            }
+        }
+
+        // Challenge management
+        function addChallenge() {
+            const text = document.getElementById('newChallenge').value.trim();
+            const authorId = parseInt(document.getElementById('challengeAuthor').value);
+            
+            if (!text || !authorId) {
+                showNotification('Please fill all fields!', 'error');
+                return;
+            }
+            
+            const author = gameData.players.find(p => p.id === authorId);
+            if (author) {
+                gameData.challenges.push({
+                    text: text,
+                    author: author.name,
+                    addedAt: new Date()
+                });
+                
+                document.getElementById('newChallenge').value = '';
+                
+                saveData();
+                updateChallengesList();
+                updateStats();
+                showNotification('Challenge added! 🎯');
+            }
+        }
+
+        function drawChallenge() {
+            if (gameData.challenges.length === 0) {
+                showNotification('No challenges available!', 'error');
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * gameData.challenges.length);
+            gameData.currentChallenge = gameData.challenges[randomIndex];
+            
+            document.getElementById('currentChallenge').innerHTML = `
+                <h4>🎯 Current Challenge</h4>
+                <p style="margin: 10px 0; font-size: 1.2em;">"${gameData.currentChallenge.text}"</p>
+                <small>Challenge by: ${gameData.currentChallenge.author}</small>
+            `;
+            
+            // Show completion form and update completer dropdown
+            document.getElementById('challengeCompletionForm').style.display = 'block';
+            updateChallengeCompleterSelect();
+            
+            saveData();
+            showNotification('New challenge drawn! 🎲');
+        }
+
+        function completeChallenge() {
+            if (!gameData.currentChallenge) {
+                showNotification('No active challenge!', 'error');
+                return;
+            }
+            
+            const completerSelect = document.getElementById('challengeCompleter');
+            const selectedOptions = Array.from(completerSelect.selectedOptions);
+            const pointsPerPlayer = parseInt(document.getElementById('challengePoints').value) || 3;
+            
+            if (selectedOptions.length === 0) {
+                showNotification('Please select who completed the challenge!', 'error');
+                return;
+            }
+            
+            const completers = selectedOptions.map(option => ({
+                id: parseInt(option.value),
+                name: option.textContent.split(' ').slice(1).join(' ') // Remove emoji
+            }));
+            
+            // Record the completion
+            const completion = {
+                challenge: gameData.currentChallenge.text,
+                challengeAuthor: gameData.currentChallenge.author,
+                completers: completers.map(c => c.name),
+                pointsAwarded: pointsPerPlayer,
+                timestamp: new Date()
+            };
+            
+            gameData.completedChallenges.unshift(completion);
+            
+            // Award points to each completer
+            completers.forEach(completer => {
+                const player = gameData.players.find(p => p.id === completer.id);
+                if (player) {
+                    player.points += pointsPerPlayer;
+                    
+                    // Add to point history
+                    gameData.pointHistory.unshift({
+                        player: player.name,
+                        amount: pointsPerPlayer,
+                        reason: `Completed challenge: "${gameData.currentChallenge.text}"`,
+                        timestamp: new Date()
+                    });
+                }
+            });
+            
+            // Clear current challenge
+            gameData.currentChallenge = null;
+            document.getElementById('currentChallenge').innerHTML = 'Challenge completed! Draw a new one. 🎉';
+            document.getElementById('challengeCompletionForm').style.display = 'none';
+            
+            saveData();
+            updateScoreboard();
+            updateStats();
+            updatePointHistory();
+            updateRecords();
+            
+            const completerNames = completers.map(c => c.name).join(', ');
+            showNotification(`Challenge completed by ${completerNames}! +${pointsPerPlayer} CP each! 🏆`);
+        }
+
+        // Redemption shop
+        function redeemItem(item, cost) {
+            const playerId = parseInt(document.getElementById('shopPlayer').value);
+            
+            if (!playerId) {
+                showNotification('Please select a player!', 'error');
+                return;
+            }
+            
+            const player = gameData.players.find(p => p.id === playerId);
+            if (!player) return;
+            
+            if (player.points < cost) {
+                showNotification(`Not enough CP! Need ${cost}, have ${player.points}`, 'error');
+                return;
+            }
+            
+            player.points -= cost;
+            
+            const itemNames = {
+                'skip': 'Skip Challenge',
+                'favor': 'Personal Favor',
+                'choice': 'Activity Choice',
+                'immunity': '1-Hour Immunity'
+            };
+            
+            gameData.redemptions.unshift({
+                player: player.name,
+                item: itemNames[item],
+                cost: cost,
+                timestamp: new Date()
+            });
+            
+            saveData();
+            updateScoreboard();
+            updateStats();
+            updateRedemptionHistory();
+            
+            showNotification(`${player.name} redeemed ${itemNames[item]}! 🛍️`);
+        }
+
+        // UI Updates
+        function updateScoreboard() {
+            const container = document.getElementById('playersList');
+            const sortedPlayers = [...gameData.players].sort((a, b) => b.points - a.points);
+            
+            container.innerHTML = sortedPlayers.map((player, index) => {
+                const rankIcon = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                const deleteButton = gameData.deleteMode ? 
+                    `<button class="btn btn-danger" onclick="deletePlayer(${player.id})" style="margin-left: 10px; padding: 5px 10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>` : '';
+                
+                const cardClass = gameData.deleteMode ? 'player-card' : 'player-card';
+                const cardStyle = gameData.deleteMode ? 'border: 2px solid #ff4444; cursor: pointer;' : '';
+                
+                return `
+                    <div class="${cardClass}" style="${cardStyle}" ${gameData.deleteMode ? `onclick="deletePlayer(${player.id})"` : ''}>
+                        <div class="player-info">
+                            <div class="player-avatar">${player.emoji}</div>
+                            <div class="player-details">
+                                <h3>${rankIcon} ${player.name}</h3>
+                                <small>Joined: ${new Date(player.joinedAt).toLocaleDateString()}</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="player-points">${player.points} CP</div>
+                            ${deleteButton}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePlayerSelects() {
+            const selects = ['pointsPlayer', 'challengeAuthor', 'shopPlayer'];
+            const options = gameData.players.map(p => `<option value="${p.id}">${p.emoji} ${p.name}</option>`).join('');
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Select Player...</option>' + options;
+            });
+            
+            // Update challenge completer select separately (allows multiple selection)
+            updateChallengeCompleterSelect();
+        }
+
+        function updateChallengeCompleterSelect() {
+            const select = document.getElementById('challengeCompleter');
+            const options = gameData.players.map(p => `<option value="${p.id}">${p.emoji} ${p.name}</option>`).join('');
+            select.innerHTML = options;
+        }
+
+        function updateRecords() {
+            updateCompletedChallenges();
+            updateRecordStats();
+            updateFullPointHistory();
+            updateFullRedemptionHistory();
+        }
+
+        function updateCompletedChallenges() {
+            const container = document.getElementById('completedChallengesList');
+            container.innerHTML = gameData.completedChallenges.slice(0, 20).map(completion => `
+                <div class="challenge-item">
+                    <strong>"${completion.challenge}"</strong>
+                    <br>✅ Completed by: <strong>${completion.completers.join(', ')}</strong>
+                    <br>🏆 Points awarded: <strong>${completion.pointsAwarded} CP each</strong>
+                    <br><small>📅 ${new Date(completion.timestamp).toLocaleString()}</small>
+                    <br><small>💡 Challenge by: ${completion.challengeAuthor}</small>
+                </div>
+            `).join('') || '<p>No challenges completed yet.</p>';
+        }
+
+        function updateRecordStats() {
+            document.getElementById('totalCompletedChallenges').textContent = gameData.completedChallenges.length;
+            
+            // Find most active challenger (who has completed the most challenges)
+            const challengerCounts = {};
+            gameData.completedChallenges.forEach(completion => {
+                completion.completers.forEach(name => {
+                    challengerCounts[name] = (challengerCounts[name] || 0) + 1;
+                });
+            });
+            
+            let mostActive = '-';
+            let maxCount = 0;
+            Object.entries(challengerCounts).forEach(([name, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    mostActive = `${name} (${count})`;
+                }
+            });
+            
+            document.getElementById('mostActiveChallengerName').textContent = mostActive;
+        }
+
+        function updateFullPointHistory() {
+            const container = document.getElementById('fullPointHistory');
+            container.innerHTML = gameData.pointHistory.map(entry => {
+                const sign = entry.amount > 0 ? '+' : '';
+                const color = entry.amount > 0 ? 'green' : 'red';
+                return `
+                    <div class="challenge-item">
+                        <strong>${entry.player}</strong> 
+                        <span style="color: ${color}; font-weight: bold;">${sign}${entry.amount} CP</span>
+                        for "${entry.reason}"
+                        <br><small>${new Date(entry.timestamp).toLocaleString()}</small>
+                    </div>
+                `;
+            }).join('') || '<p>No point changes yet.</p>';
+        }
+
+        function updateFullRedemptionHistory() {
+            const container = document.getElementById('fullRedemptionHistory');
+            container.innerHTML = gameData.redemptions.map(entry => `
+                <div class="challenge-item">
+                    <strong>${entry.player}</strong> redeemed <strong>${entry.item}</strong>
+                    for <span style="color: #667eea; font-weight: bold;">${entry.cost} CP</span>
+                    <br><small>${new Date(entry.timestamp).toLocaleString()}</small>
+                </div>
+            `).join('') || '<p>No redemptions yet.</p>';
+        }
+
+        function updateChallengesList() {
+            const container = document.getElementById('challengesList');
+            container.innerHTML = gameData.challenges.map((challenge, index) => `
+                <div class="challenge-item">
+                    <strong>${index + 1}.</strong> ${challenge.text}
+                    <br><small>Added by: ${challenge.author}</small>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalPlayers').textContent = gameData.players.length;
+            document.getElementById('totalPoints').textContent = gameData.players.reduce((sum, p) => sum + p.points, 0);
+            document.getElementById('totalChallenges').textContent = gameData.challenges.length;
+        }
+
+        function updatePointHistory() {
+            const container = document.getElementById('pointHistory');
+            container.innerHTML = gameData.pointHistory.slice(0, 10).map(entry => {
+                const sign = entry.amount > 0 ? '+' : '';
+                const color = entry.amount > 0 ? 'green' : 'red';
+                return `
+                    <div class="challenge-item">
+                        <strong>${entry.player}</strong> 
+                        <span style="color: ${color}; font-weight: bold;">${sign}${entry.amount} CP</span>
+                        for "${entry.reason}"
+                        <br><small>${new Date(entry.timestamp).toLocaleString()}</small>
+                    </div>
+                `;
+            }).join('') || '<p>No point changes yet.</p>';
+        }
+
+        function updateRedemptionHistory() {
+            const container = document.getElementById('redemptionHistory');
+            container.innerHTML = gameData.redemptions.slice(0, 10).map(entry => `
+                <div class="challenge-item">
+                    <strong>${entry.player}</strong> redeemed <strong>${entry.item}</strong>
+                    for <span style="color: #667eea; font-weight: bold;">${entry.cost} CP</span>
+                    <br><small>${new Date(entry.timestamp).toLocaleString()}</small>
+                </div>
+            `).join('') || '<p>No redemptions yet.</p>';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? '#f44336' : '#4CAF50';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function exportScoreboard() {
+            const data = {
+                exportDate: new Date().toISOString(),
+                players: gameData.players,
+                totalPoints: gameData.players.reduce((sum, p) => sum + p.points, 0),
+                totalChallenges: gameData.challenges.length
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sg-jb-trip-scoreboard.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Scoreboard exported! 📊');
+        }
+
+        // Data persistence
+        // function saveData() {
+            // Data persists in memory during the session
+            // For permanent storage, the group can export/import data
+            // console.log('Game state updated');
+        // }
+
+        // function loadData() {
+            // Load sample data for demo - replace with your actual players
+            // if (gameData.players.length === 0) {
+                // You can pre-add your group members here if desired
+            // }
+        // }
+
+        // Data persistence
+        async function saveData() {
+            // Example: save players to Supabase
+            for (const player of gameData.players) {
+                await supabase
+                .from("players")
+                .upsert(player, { onConflict: "id" }); // ensures update if exists
+            }
+
+            // save challenges
+            for (const challenge of gameData.challenges) {
+                if (challenge.text) {
+                    await supabase
+                    .from("challenges")
+                    .upsert(challenge, { onConflict: "text" }); // ensures update if exists
+                }
+            }
+
+            // save point history
+            for (const entry of gameData.pointHistory) {
+                await supabase
+                .from("point_history")
+                .insert(entry);
+            }
+
+            // save redemptions
+            for (const redemption of gameData.redemptions) {
+                await supabase
+                .from("redemptions")
+                .insert(redemption);
+            }
+
+            // save completed challenges
+            for (const completion of gameData.completedChallenges) {
+                await supabase
+                .from("completed_challenges")
+                .insert(completion);
+            }
+        }
+
+        async function loadData() {
+            const { data: players } = await supabase.from("players").select("*");
+            if (players) gameData.players = players;
+
+            const { data: challenges } = await supabase.from("challenges").select("*");
+            if (challenges) gameData.challenges = challenges;
+
+            const { data: pointHistory } = await supabase.from("point_history").select("*").order("timestamp", { ascending: false });
+            if (pointHistory) gameData.pointHistory = pointHistory;
+
+            const { data: redemptions } = await supabase.from("redemptions").select("*").order("timestamp", { ascending: false });
+            if (redemptions) gameData.redemptions = redemptions;
+
+            const { data: completedChallenges } = await supabase.from("completed_challenges").select("*").order("timestamp", { ascending: false });
+            if (completedChallenges) gameData.completedChallenges = completedChallenges;
+        }
+
+        // Import/Export for data sharing between devices
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            if (importedData.players && importedData.challenges) {
+                                gameData = importedData;
+                                init();
+                                showNotification('Data imported successfully! 📥');
+                            } else {
+                                showNotification('Invalid data format!', 'error');
+                            }
+                        } catch (err) {
+                            showNotification('Error reading file!', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(gameData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sg-jb-trip-game-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Game data exported! 💾');
+        }
+
+        // Initialize the app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

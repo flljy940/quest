@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .header h1 { color: #667eea; font-size: 2.2em; margin-bottom: 6px; font-weight: 800; }
+    .header p { color: #666; font-size: 1.05em; }
+    .tabs { display: flex; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin-bottom: 20px; overflow: hidden; backdrop-filter: blur(10px); }
+    .tab { flex: 1; padding: 14px 16px; background: transparent; border: none; color: white; font-size: 15px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; }
+    .tab.active { background: rgba(255, 255, 255, 0.22); box-shadow: inset 0 2px 10px rgba(0,0,0,0.08); }
+    .tab-content { display: none; background: rgba(255, 255, 255, 0.97); border-radius: 16px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .tab-content.active { display: block; }
+    .scoreboard { display: grid; gap: 12px; margin-bottom: 16px; }
+    .player-card { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 16px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
+    .player-card:hover { transform: translateY(-2px); }
+    .player-info { display: flex; align-items: center; gap: 12px; }
+    .player-avatar { width: 48px; height: 48px; border-radius: 50%; background: rgba(255, 255, 255, 0.22); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .player-details h3 { margin-bottom: 4px; font-size: 16px; }
+    .player-points { font-size: 1.6em; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #4b5563; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: border-color 0.2s ease; background: #fff; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #667eea; }
+    .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 18px; border-radius: 999px; font-size: 15px; cursor: pointer; transition: all 0.2s ease; margin: 4px; font-weight: 700; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(0,0,0,0.18); }
+    .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .btn-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .challenge-card { background: #f8f9fa; border: 2px dashed #667eea; border-radius: 15px; padding: 18px; margin: 10px 0; text-align: center; }
+    .current-challenge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; }
+    .challenges-list { display: grid; gap: 10px; margin-top: 12px; }
+    .challenge-item { background: #f8f9fa; padding: 12px; border-radius: 10px; border-left: 4px solid #667eea; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-top: 14px; }
+    .stat-card { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 18px; border-radius: 15px; text-align: center; }
+    .stat-number { font-size: 2.2em; font-weight: 800; }
+    .mobile-responsive { display: flex; flex-wrap: wrap; gap: 10px; }
+    @media (max-width: 768px) { .container { padding: 10px; } .header h1 { font-size: 1.8em; } .tabs { flex-direction: column; } .player-card { flex-direction: column; text-align: center; gap: 10px; } .mobile-responsive { flex-direction: column; } }
+    .redemption-shop { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 18px; margin-top: 14px; }
+    .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255, 255, 255, 0.55); margin: 10px 0; border-radius: 10px; }
+    .notification { position: fixed; top: 20px; right: 20px; background: #4CAF50; color: white; padding: 14px 18px; border-radius: 10px; display: none; z-index: 1000; animation: slideIn 0.25s ease; font-weight: 700; }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  </style>
+</head>
+<body>
+  <div id="notification" class="notification"></div>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-trophy"></i> Quest</h1>
+      <p>Beersheba JB Trip</p>
+      <p id="presence" style="margin-top:8px; color:#667eea; font-weight:700;"><i class="fa-solid fa-signal"></i> Online users: <span id="onlineCount">0</span></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="scoreboard"><i class="fas fa-chart-line"></i> Scoreboard</button>
+      <button class="tab" data-tab="profile"><i class="fas fa-user-plus"></i> Join Game</button>
+      <button class="tab" data-tab="points"><i class="fas fa-plus-circle"></i> Add Points</button>
+      <button class="tab" data-tab="challenges"><i class="fas fa-gamepad"></i> Challenges</button>
+      <button class="tab" data-tab="records"><i class="fas fa-history"></i> Records</button>
+      <button class="tab" data-tab="shop"><i class="fas fa-shopping-cart"></i> Redemption</button>
+    </div>
+
+    <!-- Scoreboard Tab -->
+    <div id="scoreboard" class="tab-content active">
+      <h2><i class="fas fa-crown"></i> Live Scoreboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="totalPlayers">0</div><div>Total Players</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalPoints">0</div><div>Total Points</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalChallenges">0</div><div>Active Challenges</div></div>
+      </div>
+      <div class="scoreboard" id="playersList"></div>
+      <div class="mobile-responsive">
+        <button class="btn" id="exportScoreboardBtn"><i class="fas fa-download"></i> Export Scoreboard</button>
+        <button class="btn" id="exportDataBtn"><i class="fas fa-save"></i> Export All Data</button>
+        <button class="btn" id="importDataBtn"><i class="fas fa-upload"></i> Import Data</button>
+        <button class="btn btn-danger" id="toggleDeleteModeBtn"><i class="fas fa-trash"></i> <span id="deleteModeText">Delete Mode</span></button>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="profile" class="tab-content">
+      <h2><i class="fas fa-user-plus"></i> Join the Game</h2>
+      <div class="form-group"><label for="playerName">Your Name:</label><input type="text" id="playerName" placeholder="Enter your awesome name!" /></div>
+      <div class="form-group">
+        <label for="playerEmoji">Choose Your Avatar Emoji:</label>
+        <select id="playerEmoji">
+          <option value="🎮">🎮 Gamer</option>
+          <option value="🎯">🎯 Target</option>
+          <option value="🚀">🚀 Rocket</option>
+          <option value="🌟">🌟 Star</option>
+          <option value="🎪">🎪 Fun</option>
+          <option value="🎭">🎭 Drama</option>
+          <option value="🎨">🎨 Creative</option>
+          <option value="🎵">🎵 Music</option>
+          <option value="🍕">🍕 Foodie</option>
+          <option value="🎈">🎈 Party</option>
+        </select>
+      </div>
+      <button class="btn" id="addPlayerBtn"><i class="fas fa-user-plus"></i> Join Game</button>
+    </div>
+
+    <!-- Points Tab -->
+    <div id="points" class="tab-content">
+      <h2><i class="fas fa-plus-circle"></i> Add Points</h2>
+      <div class="form-group"><label for="pointsPlayer">Select Player:</label><select id="pointsPlayer"></select></div>
+      <div class="form-group"><label for="pointsAmount">Points to Add:</label><input type="number" id="pointsAmount" placeholder="Enter points (can be negative)" min="-50" max="50" /></div>
+      <div class="form-group"><label for="pointsReason">Reason:</label><input type="text" id="pointsReason" placeholder="What did they do to earn/lose points?" /></div>
+      <button class="btn btn-success" id="addPointsBtn"><i class="fas fa-plus"></i> Add Points</button>
+      <h3 style="margin-top: 22px;">Recent Point Changes</h3>
+      <div id="pointHistory"></div>
+    </div>
+
+    <!-- Challenges Tab -->
+    <div id="challenges" class="tab-content">
+      <h2><i class="fas fa-gamepad"></i> Challenge Manager</h2>
+      <div class="form-group"><label for="newChallenge">Add New Challenge:</label><textarea id="newChallenge" placeholder="Write a fun challenge here!" rows="3"></textarea></div>
+      <div class="form-group"><label for="challengeAuthor">Your Name:</label><select id="challengeAuthor"></select></div>
+      <button class="btn" id="addChallengeBtn"><i class="fas fa-plus"></i> Add Challenge</button>
+      <div style="margin-top: 24px;">
+        <h3>Current Challenge</h3>
+        <div class="challenge-card current-challenge" id="currentChallenge">No active challenge — Draw one below!</div>
+        <div id="challengeCompletionForm" style="display:none; margin: 16px 0;">
+          <h4>Who completed this challenge?</h4>
+          <div class="form-group"><label for="challengeCompleter">Select Player(s):</label><select id="challengeCompleter" multiple style="height: 120px;"></select><small>Hold Ctrl/Cmd to select multiple players</small></div>
+          <div class="form-group"><label for="challengePoints">Points to Award (per player):</label><input type="number" id="challengePoints" value="3" min="0" max="10" /></div>
+        </div>
+        <div class="mobile-responsive">
+          <button class="btn btn-success" id="drawChallengeBtn"><i class="fas fa-random"></i> Draw Random Challenge</button>
+          <button class="btn btn-danger" id="completeChallengeBtn"><i class="fas fa-check"></i> Complete Challenge</button>
+        </div>
+      </div>
+      <h3>All Challenges</h3>
+      <div class="challenges-list" id="challengesList"></div>
+    </div>
+
+    <!-- Records Tab -->
+    <div id="records" class="tab-content">
+      <h2><i class="fas fa-history"></i> Game Records</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="totalCompletedChallenges">0</div><div>Challenges Completed</div></div>
+        <div class="stat-card"><div class="stat-number" id="mostActiveChallengerName">-</div><div>Most Active Challenger</div></div>
+      </div>
+      <h3>Challenge Completion History</h3>
+      <div id="completedChallengesList"></div>
+      <h3>Point History</h3>
+      <div id="fullPointHistory"></div>
+      <h3>Redemption History</h3>
+      <div id="fullRedemptionHistory"></div>
+    </div>
+
+    <!-- Redemption Shop Tab -->
+    <div id="shop" class="tab-content">
+      <h2><i class="fas fa-shopping-cart"></i> Redemption Shop</h2>
+      <p>Spend your EXperience Points (EXP) here!</p>
+      <div class="form-group"><label for="shopPlayer">Select Player:</label><select id="shopPlayer"></select></div>
+      <div class="redemption-shop">
+        <div class="shop-item"><div><strong>Skip Challenge</strong><br /><small>Avoid the next punishment/challenge</small></div><div><span style="font-weight:bold;color:#667eea;">5 EXP</span><button class="btn" data-redeem="skip" data-cost="5">Buy</button></div></div>
+        <div class="shop-item"><div><strong>Personal Favor</strong><br /><small>Get someone to do a small favor</small></div><div><span style="font-weight:bold;color:#667eea;">8 EXP</span><button class="btn" data-redeem="favor" data-cost="8">Buy</button></div></div>
+        <div class="shop-item"><div><strong>Activity Choice</strong><br /><small>Choose the next free time activity</small></div><div><span style="font-weight:bold;color:#667eea;">10 EXP</span><button class="btn" data-redeem="choice" data-cost="10">Buy</button></div></div>
+        <div class="shop-item"><div><strong>20-minutes Immunity</strong><br /><small>No challenges can affect you for 20 minutes</small></div><div><span style="font-weight:bold;color:#667eea;">10 EXP</span><button class="btn" data-redeem="immunity" data-cost="10">Buy</button></div></div>
+        <div class="shop-item"><div><strong>Go big or go home</strong><br /><small>Can only be activated before a game. Triples money earned if won, else lose the amount equal the winning prize</small></div><div><span style="font-weight:bold;color:#667eea;">15 EXP</span><button class="btn" data-redeem="immunity" data-cost="15">Buy</button></div></div>
+    
+      </div>
+      <h3 style="margin-top: 20px;">Redemption History</h3>
+      <div id="redemptionHistory"></div>
+    </div>
+  </div>
+
+  <!-- Firebase v9 (modular) -->
+  <script type="module">
+    // ===== 1) EDIT THIS: your Firebase config =====
+    const firebaseConfig = {
+    //   apiKey: "YOUR_API_KEY",
+    //   authDomain: "YOUR_PROJECT.firebaseapp.com",
+    //   databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+    //   projectId: "YOUR_PROJECT",
+    //   storageBucket: "YOUR_PROJECT.appspot.com",
+    //   messagingSenderId: "YOUR_SENDER_ID",
+    //   appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyAjiqBstgyrp-PaJSBzwcE_B_KPW3iCkJo",
+        authDomain: "quest-a80a6.firebaseapp.com",
+        databaseURL: "https://quest-a80a6-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "quest-a80a6",
+        storageBucket: "quest-a80a6.firebasestorage.app",
+        messagingSenderId: "512456541726",
+        appId: "1:512456541726:web:12b6bb80c2162588fe500f",
+        measurementId: "G-L6KDGL5EZG"
+    };
+
+    // ===== 2) Firebase SDK imports =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, set, get, onValue, update, remove, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    // (Optional simple anonymous auth for presence uniqueness)
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // ===== 3) Init app & services =====
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // ===== UI helpers =====
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+    const notify = (msg, type = 'success') => {
+      const n = $('#notification');
+      n.textContent = msg; n.style.background = type === 'error' ? '#f44336' : '#4CAF50';
+      n.style.display = 'block'; setTimeout(() => n.style.display = 'none', 2500);
+    };
+
+    // ===== Local runtime state =====
+    let deleteMode = false;
+    let players = {};            // key -> {name, emoji, points, joinedAt}
+    let challenges = {};         // key -> {text, author, addedAt}
+    let pointHistory = {};       // key -> entry
+    let redemptions = {};        // key -> entry
+    let completedChallenges = {}; // key -> entry
+    let currentChallenge = null; // {text, author}
+
+    // ===== Tabs =====
+    $$('.tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        $$('.tab').forEach(t => t.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const target = e.currentTarget.getAttribute('data-tab');
+        $$('.tab-content').forEach(c => c.classList.remove('active'));
+        $('#' + target).classList.add('active');
+      });
+    });
+
+    // ===== Presence (online users) =====
+    let myPresenceKey = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) await signInAnonymously(auth);
+      const uid = auth.currentUser.uid;
+      const presenceRef = ref(db, `presence/${uid}`);
+      await set(presenceRef, { online: true, ts: Date.now() });
+      onDisconnect(presenceRef).remove();
+    });
+
+    onValue(ref(db, 'presence'), (snap) => {
+      const val = snap.val() || {};
+      $('#onlineCount').textContent = Object.keys(val).length;
+    });
+
+    // ===== Realtime listeners =====
+    onValue(ref(db, 'players'), (snap) => { players = snap.val() || {}; renderAll(); });
+    onValue(ref(db, 'challenges'), (snap) => { challenges = snap.val() || {}; renderAll(); });
+    onValue(ref(db, 'pointHistory'), (snap) => { pointHistory = snap.val() || {}; renderAll(); });
+    onValue(ref(db, 'redemptions'), (snap) => { redemptions = snap.val() || {}; renderAll(); });
+    onValue(ref(db, 'completedChallenges'), (snap) => { completedChallenges = snap.val() || {}; renderAll(); });
+    onValue(ref(db, 'currentChallenge'), (snap) => { currentChallenge = snap.val() || null; renderCurrentChallenge(); });
+
+    // ===== UI bindings =====
+    $('#addPlayerBtn').addEventListener('click', addPlayer);
+    $('#addPointsBtn').addEventListener('click', addPoints);
+    $('#addChallengeBtn').addEventListener('click', addChallenge);
+    $('#drawChallengeBtn').addEventListener('click', drawChallenge);
+    $('#completeChallengeBtn').addEventListener('click', completeChallenge);
+    $('#toggleDeleteModeBtn').addEventListener('click', () => { deleteMode = !deleteMode; $('#deleteModeText').textContent = deleteMode ? 'Exit Delete Mode' : 'Delete Mode'; notify(deleteMode ? 'Delete mode ON — Tap players to delete' : 'Delete mode OFF'); renderPlayers(); });
+
+    $('#exportScoreboardBtn').addEventListener('click', exportScoreboard);
+    $('#exportDataBtn').addEventListener('click', exportAllData);
+    $('#importDataBtn').addEventListener('click', importAllData);
+
+    $$('.redemption-shop [data-redeem]').forEach(btn => btn.addEventListener('click', () => redeemItem(btn.dataset.redeem, parseInt(btn.dataset.cost))));
+
+    // ===== CRUD functions =====
+    async function addPlayer() {
+      const name = $('#playerName').value.trim();
+      const emoji = $('#playerEmoji').value;
+      if (!name) return notify('Please enter a name!', 'error');
+      // Prevent duplicates by name
+      const exists = Object.values(players).some(p => p.name.toLowerCase() === name.toLowerCase());
+      if (exists) return notify('Name already exists!', 'error');
+      const playersRef = ref(db, 'players');
+      const key = push(playersRef).key;
+      await set(ref(db, `players/${key}`), { name, emoji, points: 0, joinedAt: Date.now(), id: key });
+      $('#playerName').value = '';
+      notify(`Welcome ${name}! 🎉`);
+    }
+
+    async function deletePlayer(id) {
+      if (!confirm('Are you sure you want to delete this player? This cannot be undone!')) return;
+      await remove(ref(db, `players/${id}`));
+      notify('Player removed', 'error');
+    }
+
+    async function addPoints() {
+      const id = $('#pointsPlayer').value;
+      const amount = parseInt($('#pointsAmount').value);
+      const reason = $('#pointsReason').value.trim();
+      if (!id || isNaN(amount) || !reason) return notify('Please fill all fields!', 'error');
+      const player = players[id];
+      if (!player) return;
+      const newPoints = (player.points || 0) + amount;
+      await update(ref(db, `players/${id}`), { points: newPoints });
+      const histKey = push(ref(db, 'pointHistory')).key;
+      await set(ref(db, `pointHistory/${histKey}`), { player: player.name, amount, reason, timestamp: Date.now() });
+      $('#pointsAmount').value = '';
+      $('#pointsReason').value = '';
+      notify(`${amount > 0 ? '+' : ''}${amount} EXP for ${player.name}!`);
+    }
+
+    async function addChallenge() {
+      const text = $('#newChallenge').value.trim();
+      const authorId = $('#challengeAuthor').value;
+      if (!text || !authorId) return notify('Please fill all fields!', 'error');
+      const author = players[authorId];
+      const key = push(ref(db, 'challenges')).key;
+      await set(ref(db, `challenges/${key}`), { text, author: author.name, addedAt: Date.now(), id: key });
+      $('#newChallenge').value = '';
+      notify('Challenge added! 🎯');
+    }
+
+    async function drawChallenge() {
+      const list = Object.values(challenges);
+      if (list.length === 0) return notify('No challenges available!', 'error');
+      const random = list[Math.floor(Math.random() * list.length)];
+      await set(ref(db, 'currentChallenge'), random);
+      notify('New challenge drawn! 🎲');
+    }
+
+    async function completeChallenge() {
+      if (!currentChallenge) return notify('No active challenge!', 'error');
+      const select = $('#challengeCompleter');
+      const selected = Array.from(select.selectedOptions).map(o => o.value);
+      const pointsPer = parseInt($('#challengePoints').value) || 3;
+      if (selected.length === 0) return notify('Please select who completed the challenge!', 'error');
+
+      const completerNames = selected.map(id => players[id]?.name).filter(Boolean);
+      const entry = { challenge: currentChallenge.text, challengeAuthor: currentChallenge.author, completers: completerNames, pointsAwarded: pointsPer, timestamp: Date.now() };
+      const key = push(ref(db, 'completedChallenges')).key;
+      await set(ref(db, `completedChallenges/${key}`), entry);
+
+      // Award points + history per completer
+      for (const id of selected) {
+        const p = players[id];
+        if (!p) continue;
+        await update(ref(db, `players/${id}`), { points: (p.points || 0) + pointsPer });
+        const hk = push(ref(db, 'pointHistory')).key;
+        await set(ref(db, `pointHistory/${hk}`), { player: p.name, amount: pointsPer, reason: `Completed challenge: "${currentChallenge.text}"`, timestamp: Date.now() });
+      }
+
+      await set(ref(db, 'currentChallenge'), null);
+      notify(`Challenge completed by ${completerNames.join(', ')}! +${pointsPer} EXP each! 🏆`);
+    }
+
+    async function redeemItem(item, cost) {
+      const playerId = $('#shopPlayer').value;
+      if (!playerId) return notify('Please select a player!', 'error');
+      const p = players[playerId];
+      if (!p) return;
+      if ((p.points || 0) < cost) return notify(`Not enough EXP! Need ${cost}, have ${p.points}`, 'error');
+      await update(ref(db, `players/${playerId}`), { points: p.points - cost });
+      const names = { skip: 'Skip Challenge', favor: 'Personal Favor', choice: 'Activity Choice', immunity: '20-minutes Immunity' };
+      const key = push(ref(db, 'redemptions')).key;
+      await set(ref(db, `redemptions/${key}`), { player: p.name, item: names[item], cost, timestamp: Date.now() });
+      notify(`${p.name} redeemed ${names[item]}! 🛍️`);
+    }
+
+    // ===== Render functions =====
+    function renderAll() {
+      renderPlayers();
+      renderSelects();
+      renderChallengesList();
+      renderStats();
+      renderPointHistory();
+      renderRedemptionHistory();
+      renderRecords();
+    }
+
+    function renderPlayers() {
+      const list = Object.values(players).sort((a,b) => (b.points||0)-(a.points||0));
+      $('#playersList').innerHTML = list.map((p, i) => {
+        const rank = i===0?'👑':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+        const delBtn = deleteMode ? `<button class="btn btn-danger" onclick="window._del('${p.id}')" style="margin-left:10px;padding:6px 10px;"><i class='fas fa-trash'></i></button>` : '';
+        const style = deleteMode ? 'border:2px solid #ff4444; cursor:pointer;' : '';
+        return `<div class="player-card" style="${style}" ${deleteMode?`onclick=\"window._del('${p.id}')\"`:''}>
+                  <div class="player-info">
+                    <div class="player-avatar">${p.emoji||'🌟'}</div>
+                    <div class="player-details">
+                      <h3>${rank} ${p.name}</h3>
+                      <small>Joined: ${new Date(p.joinedAt||Date.now()).toLocaleDateString()}</small>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;">
+                    <div class="player-points">${p.points||0} EXP</div>
+                    ${delBtn}
+                  </div>
+                </div>`;
+      }).join('');
+      // expose delete for inline onclick
+      window._del = (id) => deletePlayer(id);
+    }
+
+    function renderSelects() {
+      const opts = Object.values(players).map(p => `<option value="${p.id}">${p.emoji||'🌟'} ${p.name}</option>`).join('');
+      ['pointsPlayer','challengeAuthor','shopPlayer'].forEach(id => {
+        const el = document.getElementById(id); if (!el) return; el.innerHTML = `<option value="">Select Player...</option>` + opts;
+      });
+      const multi = $('#challengeCompleter'); if (multi) multi.innerHTML = opts;
+    }
+
+    function renderCurrentChallenge() {
+      const box = $('#currentChallenge');
+      if (!currentChallenge) {
+        box.textContent = 'No active challenge — Draw one below!';
+        $('#challengeCompletionForm').style.display = 'none';
+      } else {
+        box.innerHTML = `<h4>🎯 Current Challenge</h4><p style="margin:10px 0; font-size:1.2em;">"${currentChallenge.text}"</p><small>Challenge by: ${currentChallenge.author}</small>`;
+        $('#challengeCompletionForm').style.display = 'block';
+      }
+    }
+
+    function renderChallengesList() {
+      const list = Object.values(challenges);
+      $('#challengesList').innerHTML = list.map((c, idx) => `<div class="challenge-item"><strong>${idx+1}.</strong> ${c.text}<br/><small>Added by: ${c.author}</small></div>`).join('');
+      $('#totalChallenges').textContent = list.length;
+    }
+
+    function renderStats() {
+      const list = Object.values(players);
+      $('#totalPlayers').textContent = list.length;
+      $('#totalPoints').textContent = list.reduce((s,p) => s + (p.points||0), 0);
+    }
+
+    function renderPointHistory(limit=10) {
+      const entries = Object.values(pointHistory).sort((a,b)=>b.timestamp-a.timestamp);
+      $('#pointHistory').innerHTML = entries.slice(0, limit).map(e => {
+        const sign = e.amount>0?'+':''; const color = e.amount>0?'green':'red';
+        return `<div class="challenge-item"><strong>${e.player}</strong> <span style="color:${color}; font-weight:bold;">${sign}${e.amount} EXP</span> for "${e.reason}"<br/><small>${new Date(e.timestamp).toLocaleString()}</small></div>`;
+      }).join('') || '<p>No point changes yet.</p>';
+    }
+
+    function renderRedemptionHistory(limit=10) {
+      const entries = Object.values(redemptions).sort((a,b)=>b.timestamp-a.timestamp);
+      $('#redemptionHistory').innerHTML = entries.slice(0, limit).map(e => `<div class="challenge-item"><strong>${e.player}</strong> redeemed <strong>${e.item}</strong> for <span style="color:#667eea; font-weight:bold;">${e.cost} EXP</span><br/><small>${new Date(e.timestamp).toLocaleString()}</small></div>`).join('') || '<p>No redemptions yet.</p>';
+    }
+
+    function renderRecords() {
+      // Completed challenges
+      const entries = Object.values(completedChallenges).sort((a,b)=>b.timestamp-a.timestamp);
+      $('#completedChallengesList').innerHTML = entries.slice(0, 20).map(c => `<div class="challenge-item"><strong>"${c.challenge}"</strong><br/>✅ Completed by: <strong>${(c.completers||[]).join(', ')}</strong><br/>🏆 Points awarded: <strong>${c.pointsAwarded} EXP each</strong><br/><small>📅 ${new Date(c.timestamp).toLocaleString()}</small><br/><small>💡 Challenge by: ${c.challengeAuthor}</small></div>`).join('') || '<p>No challenges completed yet.</p>';
+      // Stats
+      $('#totalCompletedChallenges').textContent = entries.length;
+      const counts = {};
+      entries.forEach(e => (e.completers||[]).forEach(n => counts[n] = (counts[n]||0)+1));
+      let mostActive='-'; let max=0; Object.entries(counts).forEach(([n,c]) => { if (c>max){ max=c; mostActive=`${n} (${c})`; } });
+      $('#mostActiveChallengerName').textContent = mostActive;
+      // Full histories
+      $('#fullPointHistory').innerHTML = Object.values(pointHistory).sort((a,b)=>b.timestamp-a.timestamp).map(e => {
+        const sign = e.amount>0?'+':''; const color = e.amount>0?'green':'red';
+        return `<div class="challenge-item"><strong>${e.player}</strong> <span style="color:${color}; font-weight:bold;">${sign}${e.amount} CP</span> for "${e.reason}"<br/><small>${new Date(e.timestamp).toLocaleString()}</small></div>`;
+      }).join('') || '<p>No point changes yet.</p>';
+      $('#fullRedemptionHistory').innerHTML = Object.values(redemptions).sort((a,b)=>b.timestamp-a.timestamp).map(e => `<div class="challenge-item"><strong>${e.player}</strong> redeemed <strong>${e.item}</strong> for <span style=\"color:#667eea; font-weight:bold;\">${e.cost} EXP</span><br/><small>${new Date(e.timestamp).toLocaleString()}</small></div>`).join('') || '<p>No redemptions yet.</p>';
+    }
+
+    // ===== Import/Export =====
+    async function exportScoreboard() {
+      const data = {
+        exportDate: new Date().toISOString(),
+        players: Object.values(players).sort((a,b)=>(b.points||0)-(a.points||0)),
+        totalPoints: Object.values(players).reduce((s,p)=>s+(p.points||0),0),
+        totalChallenges: Object.keys(challenges).length
+      };
+      downloadJSON(data, 'sg-jb-trip-scoreboard.json');
+      notify('Scoreboard exported! 📊');
+    }
+
+    async function exportAllData() {
+      const snapshot = {
+        players, challenges, pointHistory, redemptions, completedChallenges, currentChallenge
+      };
+      downloadJSON(snapshot, `sg-jb-trip-game-${new Date().toISOString().split('T')[0]}.json`);
+      notify('Game data exported! 💾');
+    }
+
+    function importAllData() {
+      const input = document.createElement('input');
+      input.type = 'file'; input.accept = '.json';
+      input.onchange = async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const text = await file.text();
+        try {
+          const data = JSON.parse(text);
+          if (!data) throw new Error('Invalid');
+          // overwrite database paths
+          if (data.players) await set(ref(db,'players'), data.players);
+          if (data.challenges) await set(ref(db,'challenges'), data.challenges);
+          if (data.pointHistory) await set(ref(db,'pointHistory'), data.pointHistory);
+          if (data.redemptions) await set(ref(db,'redemptions'), data.redemptions);
+          if (data.completedChallenges) await set(ref(db,'completedChallenges'), data.completedChallenges);
+          await set(ref(db,'currentChallenge'), data.currentChallenge || null);
+          notify('Data imported successfully! 📥');
+        } catch(err) { console.error(err); notify('Invalid data file!', 'error'); }
+      };
+      input.click();
+    }
+
+    function downloadJSON(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob); const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+    }
+
+    // ===== Seed some default challenges (only if none exist) =====
+    get(ref(db,'challenges')).then(s => { if (!s.exists()) {
+      const defaults = [
+        { text: 'Do a TikTok dance challenge', author: 'System' },
+        { text: 'Challenge a stranger to rock-paper-scissors', author: 'System' },
+        { text: '被每个人创飞一次', author: 'System' },
+        { text: 'Wear double ponytails for at least 10 mins', author: 'System' },
+        { text: 'Do 10 jumping jacks while others count', author: 'System' }
+      ];
+      defaults.forEach(d => { const k = push(ref(db,'challenges')).key; set(ref(db,`challenges/${k}`), { ...d, addedAt: Date.now(), id: k }); });
+    }});
+
+  </script>
+
+  <!-- Basic safety: DB rules to paste in Firebase Console → Realtime Database → Rules
+  {
+    "rules": {
+      ".read": true,
+      ".write": true
+    }
+  }
+  For production, restrict writes to authenticated users only.
+  -->
+</body>
+</html>
